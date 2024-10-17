@@ -1,8 +1,7 @@
-
 "use client";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { useState, ReactNode } from "react";
+import { useState, useEffect, ReactNode } from "react";
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -14,12 +13,18 @@ const PageTransition = ({ children, href, duration }: PageTransitionProps) => {
   const router = useRouter();
   const [isExiting, setIsExiting] = useState(false);
 
+  useEffect(() => {
+    if (isExiting) {
+      const timer = setTimeout(() => {
+        router.push(href);
+      }, duration);
+      return () => clearTimeout(timer);
+    }
+  }, [isExiting, duration, href, router]);
+
   const handleLinkClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsExiting(true);
-    setTimeout(() => {
-      router.push(href);
-    }, duration);
   };
 
   return (
